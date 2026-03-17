@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent
 MATERIALS_DIR = BASE_DIR / "materials"
 OUTPUT_DIR = MATERIALS_DIR / "generated_welcome_packs"
 TEMPLATE_PATH = MATERIALS_DIR / "Tenant Welcome Pack Template.docx"
-DEFAULT_MODEL = "openai/gpt-oss-120b"
+DEFAULT_MODEL = "meta-llama/llama-4-scout-17b-16e-instruct"
 DEFAULT_BUCKET = "leases"
 DEFAULT_TABLE = "leases"
 
