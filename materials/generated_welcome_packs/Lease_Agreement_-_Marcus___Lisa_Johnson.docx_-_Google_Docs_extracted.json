@@ -1,0 +1,16 @@
+{
+  "tenant_name": "Marcus Johnson, Lisa Johnson",
+  "property_address": "18 River Road, Unit 7, Abbotsford VIC 3067",
+  "lease_start_date": "15/04/2026",
+  "lease_end_date": "14/04/2027",
+  "rent_amount": "$2,650.00 AUD",
+  "bond_amount": "$5,300.00 AUD",
+  "num_occupants": "",
+  "pet_permission": "",
+  "parking_included": "",
+  "special_conditions": "",
+  "landlord_name": "Catherine Webb",
+  "property_manager_name": "Acme Property Group",
+  "property_manager_email": "julia.torres@acmepg.com.au",
+  "property_manager_phone": "+61395550142"
+}

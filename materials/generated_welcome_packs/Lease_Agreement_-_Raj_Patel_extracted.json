@@ -1,0 +1,16 @@
+{
+  "tenant_name": "Raj Patel",
+  "property_address": "33 Victoria Crescent, Flat 12A, St Kilda VIC 3182",
+  "lease_start_date": "1 April 2026",
+  "lease_end_date": "31 March 2027",
+  "rent_amount": "$2,300.00 AUD",
+  "bond_amount": "$4,983.34 AUD",
+  "num_occupants": "2",
+  "pet_permission": "Not permitted without prior written consent of the landlord",
+  "parking_included": "One designated space at Basement Level 1, Space #47 (one parking fob provided)",
+  "special_conditions": "Replacement parking fob incurs $75 fee; tenant must use designated bin room on Basement Level 1 for rubbish collection.",
+  "landlord_name": "Anita Desmond",
+  "property_manager_name": "Acme Property Group",
+  "property_manager_email": "julia.torres@acmepg.com.au",
+  "property_manager_phone": "+61 3 9555 0142"
+}

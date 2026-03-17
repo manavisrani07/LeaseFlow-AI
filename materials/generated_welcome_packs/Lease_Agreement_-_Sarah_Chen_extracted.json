@@ -1,0 +1,16 @@
+{
+  "tenant_name": "Sarah Chen",
+  "property_address": "42 Oakwood Avenue, Apartment 3B, Richmond VIC 3121",
+  "lease_start_date": "1 March 2026",
+  "lease_end_date": "28 February 2027",
+  "rent_amount": "$2,200.00 AUD",
+  "bond_amount": "$4,400.00 AUD",
+  "num_occupants": "1",
+  "pet_permission": "Not permitted",
+  "parking_included": "Not included",
+  "special_conditions": "",
+  "landlord_name": "Robert Harmon",
+  "property_manager_name": "Julia Torres",
+  "property_manager_email": "julia.torres@acmepg.com.au",
+  "property_manager_phone": "+61 3 9555 0142"
+}

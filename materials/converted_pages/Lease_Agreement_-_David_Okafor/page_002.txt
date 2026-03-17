@@ -1,0 +1,37 @@
+Agent: Julia Torres, Acme Property Group
+Date
+
+Landlord | Fiona Marshall
+
+Tenant | David Okafor
+
+Managing Agent | Acme Property Group
+
+Agent Contact | Julia Torres | julia.torres@acmepg.com.au |
++61 3 9555 0142
+
+Address | 105 King Street, Studio 2
+Suburb/State/Postcode | Melbourne VIC 3000
+Property Type | Studio apartment
+
+Furnished | No
+
+Commencement Date | 1 May 2026
+Expiry Date | 31 October 2026
+Lease Duration | 6 months (fixed term)
+
+Rent Amount | $1,750.00 AUD per month
+
+Payment Frequency | Monthly
+
+Payment Method | Direct bank transfer to agent-nominated
+account
+
+First Payment Due | 1 May 2026
+
+Bond Amount | $3,500.00 AUD
+Equivalent To | 2 months rent
+Lodged With | Residential Tenancies Bond Authority (RTBA)
+
+Maximum Occupants | 1
+Named Occupant(s) | David Okafor
