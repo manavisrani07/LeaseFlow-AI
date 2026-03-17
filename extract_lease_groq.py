@@ -383,17 +383,17 @@ class LeaseProcessor:
 
 def resolve_required_env() -> tuple[str, str, str, str]:
     groq_api_key = os.getenv("GROQ_API_KEY")
-    supabase_url = os.getenv("SUPBASE_URL")
-    supabase_service_key = os.getenv("SUPBASE_SERVICE_KEY")
+    supabase_url = os.getenv("SUPABASE_URL")
+    supabase_service_key = os.getenv("SUPABASE_SERVICE_KEY")
     model = os.getenv("GROQ_MODEL", DEFAULT_MODEL)
 
     missing = []
     if not groq_api_key:
         missing.append("GROQ_API_KEY")
     if not supabase_url:
-        missing.append("SUPBASE_URL")
+        missing.append("SUPABASE_URL")
     if not supabase_service_key:
-        missing.append("SUPBASE_SERVICE_KEY")
+        missing.append("SUPABASE_SERVICE_KEY")
 
     if missing:
         raise EnvironmentError(f"Missing environment variables: {', '.join(missing)}")
