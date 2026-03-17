@@ -9,6 +9,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Any
+from urllib.parse import urlparse
 from uuid import uuid4
 
 from docx import Document
@@ -281,6 +282,29 @@ class LeaseProcessor:
 
         filename = sanitize_filename(Path(str(storage_path)).name)
         return filename, file_bytes
+
+    def list_leases(self, limit: int = 100) -> list[dict[str, Any]]:
+        response = (
+            self.supabase.table(self.table)
+            .select(
+                "id, filename, status, extracted, storage_path_generated, storage_path_original, created_at, updated_at"
+            )
+            .order("created_at", desc=True)
+            .limit(limit)
+            .execute()
+        )
+        rows = response.data or []
+        return [row for row in rows if isinstance(row, dict)]
+
+    def runtime_config(self) -> dict[str, str]:
+        raw_url = getattr(self.supabase, "supabase_url", "")
+        host = urlparse(str(raw_url)).netloc or "unknown"
+        return {
+            "model": self.model,
+            "storage_bucket": self.bucket,
+            "table": self.table,
+            "supabase_host": host,
+        }
 
     def process_file(self, file_path: Path, filename: str | None = None) -> LeaseProcessingResult:
         display_name = filename or file_path.name

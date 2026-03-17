@@ -1,21 +1,24 @@
-# Lease Welcome Pack Generator
+# LeaseFlow AI
 
-This project processes lease agreements (`.pdf` or `.docx`), extracts structured lease fields using Groq LLM, generates a Tenant Welcome Pack DOCX from a template, stores both files in Supabase Storage, stores metadata and extracted fields in Supabase Postgres, and lets users download the generated welcome pack.
+LeaseFlow AI processes lease agreements (`.pdf` or `.docx`), extracts structured lease fields using Groq LLM, generates a Tenant Welcome Pack DOCX from a template, stores both files in Supabase Storage, stores metadata and extracted fields in Supabase Postgres, and provides a clean UI to review history and download welcome packs.
 
 ## Features
 
-- Upload lease file in PDF or DOCX format
+- Upload one or multiple lease files in PDF or DOCX format
+- Sequential synchronous processing for batch uploads
 - Extract lease fields via Groq LLM
 - Generate welcome pack DOCX from template (`materials/Tenant Welcome Pack Template.docx`)
 - Persist processing lifecycle and extracted JSON in Supabase table `leases`
 - Upload original lease and generated DOCX to Supabase bucket `leases`
 - FastAPI backend with REST endpoints
-- Minimal Streamlit frontend for upload, extraction preview, and download
+- Streamlit frontend named LeaseFlow AI
+- Database-backed history view with per-record details and extracted information
+- Download generated welcome packs from current run or any historical record
 
 ## Architecture
 
-1. User uploads a lease file from Streamlit
-2. Streamlit calls FastAPI `POST /leases/process`
+1. User uploads one or more lease files from Streamlit
+2. Streamlit processes files synchronously in sequence by calling FastAPI
 3. FastAPI uses `LeaseProcessor` (`extract_lease_groq.py`)
 4. Processor inserts `processing` row into Supabase table
 5. Processor uploads original file to Supabase Storage
@@ -23,7 +26,7 @@ This project processes lease agreements (`.pdf` or `.docx`), extracts structured
 7. Processor generates welcome pack DOCX from template
 8. Processor uploads generated DOCX to Storage
 9. Processor updates DB row to `completed` (or `failed` on errors)
-10. Streamlit calls `GET /leases/{id}/download` and offers file download
+10. Streamlit loads history from DB and allows opening any previous conversion with extracted info and download
 
 ## Supabase Requirements
 
@@ -106,6 +109,14 @@ Upload and process a lease file.
 - Form field: `file`
 - Supported files: `.pdf`, `.docx`
 
+### `POST /leases/process-batch`
+
+Process multiple files synchronously in sequence (server-side loop).
+
+- Content type: `multipart/form-data`
+- Form field: `files` (repeat field for each file)
+- Supported files: `.pdf`, `.docx`
+
 Example response:
 
 ```json
@@ -126,18 +137,30 @@ Example response:
 
 Fetch lease row metadata from DB.
 
+### `GET /leases`
+
+List recent lease records from DB.
+
+- Query param: `limit` (default `100`, max `500`)
+
+### `GET /config`
+
+Returns runtime config used by LeaseFlow AI (model, storage bucket, table, Supabase host).
+
 ### `GET /leases/{lease_id}/download`
 
 Download generated welcome pack DOCX for a processed lease ID.
 
-## Streamlit Frontend
+## Streamlit Frontend (LeaseFlow AI)
 
 File: `frontend_streamlit.py`
 
 What it does:
-- Lets user upload PDF or DOCX
-- Sends file to backend `/leases/process`
-- Displays extracted fields JSON
+- Lets user upload multiple PDF/DOCX files
+- Runs processing sequentially (synchronous)
+- Shows a clean run summary and extracted fields for each file
+- Loads historical conversions directly from Supabase-backed API
+- Opens each record with status, paths, timestamps, and extracted info
 - Downloads generated welcome pack through `/leases/{id}/download`
 
 ## Deployability

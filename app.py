@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from typing import Any
 
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
@@ -25,8 +26,18 @@ def health() -> dict[str, str]:
     return {"status": "ok"}
 
 
-@app.post("/leases/process")
-async def process_lease(file: UploadFile = File(...)) -> dict:
+def _result_to_response(result: LeaseProcessingResult) -> dict[str, Any]:
+    return {
+        "id": result.lease_id,
+        "filename": result.filename,
+        "status": result.status,
+        "storage_path_original": result.storage_path_original,
+        "storage_path_generated": result.storage_path_generated,
+        "extracted": result.extracted,
+    }
+
+
+async def _process_uploaded_file(file: UploadFile) -> dict[str, Any]:
     if not file.filename:
         raise HTTPException(status_code=400, detail="Missing filename")
 
@@ -50,19 +61,47 @@ async def process_lease(file: UploadFile = File(...)) -> dict:
             temp_path.write_bytes(content)
 
             result: LeaseProcessingResult = processor.process_file(temp_path, filename=file.filename)
-
-        return {
-            "id": result.lease_id,
-            "filename": result.filename,
-            "status": result.status,
-            "storage_path_original": result.storage_path_original,
-            "storage_path_generated": result.storage_path_generated,
-            "extracted": result.extracted,
-        }
+        return _result_to_response(result)
     except HTTPException:
         raise
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"Processing failed: {exc}") from exc
+
+
+@app.post("/leases/process")
+async def process_lease(file: UploadFile = File(...)) -> dict[str, Any]:
+    return await _process_uploaded_file(file)
+
+
+@app.post("/leases/process-batch")
+async def process_leases_batch(files: list[UploadFile] = File(...)) -> dict[str, Any]:
+    if not files:
+        raise HTTPException(status_code=400, detail="No files uploaded")
+
+    results: list[dict[str, Any]] = []
+    for item in files:
+        try:
+            processed = await _process_uploaded_file(item)
+            processed["ok"] = True
+            results.append(processed)
+        except HTTPException as exc:
+            results.append(
+                {
+                    "filename": item.filename,
+                    "ok": False,
+                    "status": "failed",
+                    "error": exc.detail,
+                }
+            )
+
+    completed = sum(1 for row in results if row.get("ok") is True)
+    failed = len(results) - completed
+    return {
+        "total": len(results),
+        "completed": completed,
+        "failed": failed,
+        "results": results,
+    }
 
 
 @app.get("/leases/{lease_id}")
@@ -76,6 +115,31 @@ def get_lease(lease_id: str) -> dict:
     if not row:
         raise HTTPException(status_code=404, detail="Lease not found")
     return row
+
+
+@app.get("/leases")
+def list_leases(limit: int = 100) -> dict[str, Any]:
+    if limit < 1 or limit > 500:
+        raise HTTPException(status_code=400, detail="limit must be between 1 and 500")
+
+    try:
+        processor = build_processor_from_env()
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Configuration error: {exc}") from exc
+
+    return {"items": processor.list_leases(limit=limit)}
+
+
+@app.get("/config")
+def get_config() -> dict[str, str]:
+    try:
+        processor = build_processor_from_env()
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Configuration error: {exc}") from exc
+
+    config = processor.runtime_config()
+    config["app_name"] = "LeaseFlow AI"
+    return config
 
 
 @app.get("/leases/{lease_id}/download")
